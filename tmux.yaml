@@ -1,0 +1,49 @@
+---
+
+- name: Setup tmux
+  hosts: localhost
+  become: false
+  gather_facts: true 
+  vars:
+    tmuxconf: "{{ ansible_env.HOME }}/.tmux.conf"
+    tmux_dir: "{{ ansible_env.HOME }}/.tmux"
+  tasks: 
+
+  - name: Install tmux
+    ansible.builtin.package:
+      name: 
+        - tmux
+      state: present
+    become: true
+
+  # Create a .tmux directory to store related repositories like solarized
+  - name: Ensure .tmux directories exists
+    file:
+      path: "{{ item }}"
+      state: directory
+      recurse: no
+      mode: 0750
+    loop:
+      - "{{ tmux_dir }}"
+
+  - name: get tmux solarized colors
+    git:
+      dest: "{{ tmux_dir }}/{{ item.name }}"
+      repo: "{{ item.url }}"
+      clone: yes
+      update: yes
+      recursive: no
+    loop:
+    - name: solarized-tmux
+      url: https://github.com/seebi/tmux-colors-solarized
+
+  - name: Deploy .tmuxconf
+    ansible.builtin.copy:
+      src: tmux.conf
+      dest: "{{ tmuxconf }}"
+      backup: yes
+      mode: 0640
+
+  - name: Add solarized colors to tmux.conf
+    blockinfile: path="{{ tmuxconf }}" block={{lookup('file', '{{ tmux_dir }}/solarized-tmux/tmuxcolors-256.conf')}} create=yes state=present
+   

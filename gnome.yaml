@@ -1,0 +1,60 @@
+---
+
+- name: My first play to copy files
+  hosts: localhost
+  tasks: 
+
+  - name: update gnome dconf settings
+    tags: gnome,gnome-terminal
+    dconf:
+      key: "{{item.key}}"
+      value: "{{item.value}}"
+    loop:
+      - {key: '/org/gnome/terminal/legacy/default-show-menubar', value: 'false'}
+      - {key: '/org/gnome/desktop/interface/clock-show-date', value: 'true'}
+
+# b1dcc9dd-5262-4d8d-a863-c897e6d979b9 deems to be the default profile in Gnome.
+# dconf list /org/gnome/terminal/legacy/profiles:/
+# dconf dump /org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/
+
+  - name: set gnome-terminal configuration
+    tags: gnome,gnome-terminal
+    dconf:
+      key: "/org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/{{ item.key }}"
+      value: "{{ item.value}}"
+    with_items:
+      - { key: cell-height-scale, value: "1.0" }
+      - { key: cell-width-scale, value: "1.0" }
+      - { key: cursor-blink-mode, value: "'on'" }
+      - { key: cursor-shape, value: "'block'" }
+      - { key: font, value: "'Hack 12'" }
+      - { key: login-shell, value: "false" }
+      - { key: scroll-on-keystroke, value: "true" }
+      - { key: scroll-on-output, value: "true" }
+      - { key: scrollback-unlimited, value: "true" }
+      - { key: scrollbar-policy, value: "'never'" }
+      - { key: use-system-font, value: "false" }
+
+
+  - name: set gnome-terminal configuration
+    tags: gnome,gnome-terminal,solarized-dark
+    dconf:
+      key: "/org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/{{ item.key }}"
+      value: "{{ item.value}}"
+    with_items:
+      - { key: background-color, value: "'rgb(0,43,54)'" }
+      - { key: background-transparency-percent, value: "10" }
+      - { key: bold-color, value: "'rgb(42,161,152)'" }
+      - { key: bold-color-same-as-fg, value: "false" }
+      - { key: bold-is-bright, value: "false" }
+      - { key: cursor-background-color, value: "'rgb(220,50,47)'" }
+      - { key: cursor-foreground-color, value: "'rgb(38,139,210)'" }
+      - { key: foreground-color, value: "'rgb(131,148,150)'" }
+      - { key: highlight-background-color, value: "'rgb(38,139,210)'" }
+      - { key: highlight-foreground-color, value: "'rgb(238,232,213)'" }
+      - { key: palette, value: "['rgb(7,54,66)', 'rgb(220,50,47)', 'rgb(133,153,0)', 'rgb(181,137,0)', 'rgb(38,139,210)', 'rgb(211,54,130)', 'rgb(42,161,152)', 'rgb(238,232,213)', 'rgb(0,43,54)', 'rgb(203,75,22)', 'rgb(88,110,117)', 'rgb(101,123,131)', 'rgb(131,148,150)', 'rgb(108,113,196)', 'rgb(147,161,161)', 'rgb(253,246,227)']" }
+      - { key: use-theme-colors, value: "false" }
+      - { key: use-theme-transparency, value: "false" }
+      - { key: use-transparent-background, value: "true" }
+
+

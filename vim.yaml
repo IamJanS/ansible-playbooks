@@ -1,0 +1,57 @@
+---
+
+- name: Setup vim
+  hosts: localhost
+  become: false
+  gather_facts: true 
+  vars:
+    vim_dir: "{{ ansible_env.HOME }}/.vim"
+    vimrc: "{{ ansible_env.HOME }}/.vimrc"
+  tasks: 
+
+  - name: Install vim
+    ansible.builtin.package:
+      name: 
+        - vim
+        - vim-gui-common
+      state: present
+    become: true
+
+  - name: Ensure vim directories exists
+    file:
+      path: "{{ item }}"
+      state: directory
+      recurse: no
+      mode: 0750
+    loop:
+      - "{{ vim_dir }}/pack/bundle/start"
+      - "{{ vim_dir }}/colors"
+
+  - name: add plugins
+    git:
+      dest: "{{ vim_dir }}/pack/bundle/start/{{ item.name }}"
+      repo: "{{ item.url }}"
+      clone: yes
+      update: yes
+      recursive: no
+    loop:
+    - name: nerdtree
+      url: https://github.com/preservim/nerdtree
+    - name: vim-tbone
+      url: https://github.com/tpope/vim-tbone
+      # Not a plugin just a place to put the solarized repro
+    - name: vim-colors-solarized
+      url: https://github.com/altercation/vim-colors-solarized
+
+  - name: copy solarized file to colors
+    ansible.builtin.copy:
+      src: "{{ vim_dir }}/pack/bundle/start/vim-colors-solarized/colors/solarized.vim"
+      dest: "{{ vim_dir }}/colors"
+
+  - name: Deploy .vimrc
+    ansible.builtin.copy:
+      src: vimrc
+      dest: "{{ vimrc }}"
+      backup: yes
+      mode: 0640
+   

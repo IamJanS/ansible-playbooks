@@ -1,24 +1,31 @@
 ---
 
-- name: My first play to copy files
+- name: Gnome terminal setup
   hosts: localhost
   tasks: 
 
+  - name: Install dependencies
+    ansible.builtin.package:
+      name: 
+        - fonts-powerline
+      state: present
+    become: true
+
+
   - name: update gnome dconf settings
-    tags: gnome,gnome-terminal
+    tags: gnome-terminal
     dconf:
       key: "{{item.key}}"
       value: "{{item.value}}"
     loop:
-      - {key: '/org/gnome/terminal/legacy/default-show-menubar', value: 'false'}
-      - {key: '/org/gnome/desktop/interface/clock-show-date', value: 'true'}
+      - {key: '/org/gnome/terminal/legacy/default-show-menubar', value: "true"}
 
 # b1dcc9dd-5262-4d8d-a863-c897e6d979b9 deems to be the default profile in Gnome.
 # dconf list /org/gnome/terminal/legacy/profiles:/
 # dconf dump /org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/
 
   - name: set gnome-terminal configuration
-    tags: gnome,gnome-terminal
+    tags: gnome-terminal
     dconf:
       key: "/org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/{{ item.key }}"
       value: "{{ item.value}}"
@@ -36,8 +43,8 @@
       - { key: use-system-font, value: "false" }
 
 
-  - name: set gnome-terminal configuration
-    tags: gnome,gnome-terminal,solarized-dark
+  - name: set gnome-terminal color configuration solarized-dark
+    tags: gnome-terminal
     dconf:
       key: "/org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/{{ item.key }}"
       value: "{{ item.value}}"
@@ -56,5 +63,4 @@
       - { key: use-theme-colors, value: "false" }
       - { key: use-theme-transparency, value: "false" }
       - { key: use-transparent-background, value: "true" }
-
 

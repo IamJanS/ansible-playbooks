@@ -1,0 +1,53 @@
+---
+
+- name: Setup zsh
+  hosts: localhost
+  become: false
+  gather_facts: true 
+  vars:
+    tmp_dir: "{{ ansible_env.HOME }}/tmp"
+    zshrc: "{{ ansible_env.HOME }}/.zshrc"
+    oh_my_zsh: "{{ ansible_env.HOME }}/.oh-my-zsh"
+  tasks:
+
+  - name: Check if local tmp dir exits if not create
+    file:
+      path: "{{ tmp_dir }}"
+      state: directory
+      mode: '0750' 
+
+  - name: Install dependencies
+    ansible.builtin.package:
+      name: 
+        - fonts-powerline
+      state: present
+    become: true
+
+  - name: Install zsh
+    ansible.builtin.package:
+      name: 
+        - zsh
+      state: present
+    become: true
+
+  - name: Download oh my ssh installer
+    get_url:
+      url: https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+      dest: "{{ tmp_dir }}"
+      mode: '0750'
+
+  - name: If oh-my-zsh directory exists, delete it
+    file:
+      state: absent
+      path: "{{ oh_my_zsh }}"
+
+  - name: Run oh my ssh installer
+    script: /home/ethos/tmp/install.sh --unattended
+
+  - name: Set users default shell
+    user:
+      name: "{{ ansible_env.USER }}"
+      shell: /usr/bin/zsh
+    become: yes
+
+

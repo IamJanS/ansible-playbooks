@@ -26,8 +26,9 @@
     loop:
       - "{{ vim_dir }}/pack/bundle/start"
       - "{{ vim_dir }}/colors"
+      - "{{ vim_dir }}/tmp"
 
-  - name: add plugins
+  - name: add vim plugins
     git:
       dest: "{{ vim_dir }}/pack/bundle/start/{{ item.name }}"
       repo: "{{ item.url }}"
@@ -39,13 +40,21 @@
       url: https://github.com/preservim/nerdtree
     - name: vim-tbone
       url: https://github.com/tpope/vim-tbone
-      # Not a plugin just a place to put the solarized repro
+
+  - name: add other vim stuff - keep in tmp dir for eventual debugging
+    git:
+      dest: "{{ vim_dir }}/tmp/{{ item.name }}"
+      repo: "{{ item.url }}"
+      clone: yes
+      update: yes
+      recursive: no
+    loop:
     - name: vim-colors-solarized
       url: https://github.com/altercation/vim-colors-solarized
 
   - name: copy solarized file to colors
     ansible.builtin.copy:
-      src: "{{ vim_dir }}/pack/bundle/start/vim-colors-solarized/colors/solarized.vim"
+      src: "{{ vim_dir }}/tmp/vim-colors-solarized/colors/solarized.vim"
       dest: "{{ vim_dir }}/colors"
 
   - name: Deploy .vimrc

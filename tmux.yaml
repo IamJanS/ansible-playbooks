@@ -10,7 +10,7 @@
   tasks: 
 
   - name: Install tmux
-    ansible.builtin.package:
+    package:
       name: 
         - tmux
       state: present
@@ -38,7 +38,7 @@
       url: https://github.com/seebi/tmux-colors-solarized
 
   - name: Deploy .tmuxconf
-    ansible.builtin.copy:
+    copy:
       src: tmux.conf
       dest: "{{ tmuxconf }}"
       backup: yes

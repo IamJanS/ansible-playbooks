@@ -5,7 +5,7 @@
   tasks: 
 
   - name: Install dependencies
-    ansible.builtin.package:
+    package:
       name: 
         - fonts-powerline
       state: present

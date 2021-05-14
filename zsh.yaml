@@ -17,14 +17,14 @@
       mode: '0750' 
 
   - name: Install dependencies
-    ansible.builtin.package:
+    package:
       name: 
         - fonts-powerline
       state: present
     become: true
 
   - name: Install zsh
-    ansible.builtin.package:
+    package:
       name: 
         - zsh
       state: present
